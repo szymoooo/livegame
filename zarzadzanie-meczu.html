@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Zarządzania Meczem Koszykówki</title>
+    <link rel="stylesheet" href="style-mecz.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Panel Administracyjny -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h2><i class="fas fa-basketball-ball"></i> Panel Zarządzania Meczem</h2>
+            <button class="toggle-panel" onclick="toggleAdminPanel()">
+                <i class="fas fa-chevron-up" id="toggleIcon"></i>
+            </button>
+        </div>
+        
+        <div class="admin-content">
+            <div class="admin-section">
+                <h3>Ustawienia Meczu</h3>
+                <div class="team-setup">
+                    <div class="team home-team">
+                        <h4>Drużyna Gospodarzy</h4>
+                        <input type="text" id="homeTeam" placeholder="Nazwa drużyny gospodarzy" value="Rostock Seawolves I">
+                        <input type="color" id="homeColor1" value="#ffffff" title="Kolor podstawowy">
+                        <input type="color" id="homeColor2" value="#3d41da" title="Kolor dodatkowy">
+                    </div>
+                    <div class="team away-team">
+                        <h4>Drużyna Gości</h4>
+                        <input type="text" id="awayTeam" placeholder="Nazwa drużyny gości" value="AK MAMA Sierakowice">
+                        <input type="color" id="awayColor1" value="#000000" title="Kolor podstawowy">
+                        <input type="color" id="awayColor2" value="#ffffff" title="Kolor dodatkowy">
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>Kontrola Meczu</h3>
+                <div class="match-controls">
+                    <div class="time-control">
+                        <label>Czas meczu:</label>
+                        <div class="time-display">
+                            <span id="currentTime">00:00</span>
+                            <span class="period">Okres: <span id="currentPeriod">1</span></span>
+                        </div>
+                        <div class="time-buttons">
+                            <button onclick="startMatch()" id="startBtn">▶️ Start</button>
+                            <button onclick="pauseMatch()" id="pauseBtn">⏸️ Pauza</button>
+                            <button onclick="resetMatch()">🔄 Reset</button>
+                            <button onclick="nextPeriod()">⏭️ Następny okres</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>Dodaj Wydarzenie</h3>
+                <div class="event-controls">
+                    <div class="event-type">
+                        <label>Typ wydarzenia:</label>
+                        <select id="eventType">
+                            <option value="goal">Gol (2 pkt)</option>
+                            <option value="goal3">Gol za 3 pkt</option>
+                            <option value="foul">Faul</option>
+                            <option value="timeout">Timeout</option>
+                            <option value="comment">Komentarz</option>
+                        </select>
+                    </div>
+                    
+                    <div class="team-selection">
+                        <label>Drużyna:</label>
+                        <select id="eventTeam">
+                            <option value="home">Gospodarze</option>
+                            <option value="away">Goście</option>
+                            <option value="both">Obie/Neutralne</option>
+                        </select>
+                    </div>
+
+                    <div class="player-input">
+                        <label>Zawodnik:</label>
+                        <input type="text" id="playerName" placeholder="Imię i nazwisko">
+                        <input type="number" id="playerNumber" placeholder="Nr" min="0" max="99">
+                    </div>
+
+                    <div class="event-description">
+                        <label>Opis/Komentarz:</label>
+                        <textarea id="eventDescription" placeholder="Opis wydarzenia..."></textarea>
+                    </div>
+
+                    <button onclick="addEvent()" class="add-event-btn">
+                        <i class="fas fa-plus"></i> Dodaj Wydarzenie
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>Szybkie Akcje</h3>
+                <div class="quick-actions">
+                    <button onclick="quickGoal('home', 2)" class="quick-btn home-btn">+2 Gospodarze</button>
+                    <button onclick="quickGoal('away', 2)" class="quick-btn away-btn">+2 Goście</button>
+                    <button onclick="quickGoal('home', 3)" class="quick-btn home-btn">+3 Gospodarze</button>
+                    <button onclick="quickGoal('away', 3)" class="quick-btn away-btn">+3 Goście</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interfejs Live Meczu -->
+    <div class="match-display">
+        <div class="match-header">
+            <div class="team-info home" id="homeTeamInfo">
+                <div class="team-colors" id="homeTeamColors"></div>
+                <h2 id="homeTeamName">Rostock Seawolves I</h2>
+                <div class="score" id="homeScore">0</div>
+            </div>
+            
+            <div class="match-center">
+                <div class="match-time">
+                    <div class="time" id="liveTime">00:00</div>
+                    <div class="period-info">Okres <span id="livePeriod">1</span></div>
+                </div>
+                <div class="period-scores" id="periodScores">
+                    <span class="period-score">0-0</span>
+                </div>
+            </div>
+            
+            <div class="team-info away" id="awayTeamInfo">
+                <div class="team-colors" id="awayTeamColors"></div>
+                <h2 id="awayTeamName">AK MAMA Sierakowice</h2>
+                <div class="score" id="awayScore">0</div>
+            </div>
+        </div>
+
+        <!-- Live Feed -->
+        <div class="live-feed" id="liveFeed">
+            <div class="feed-header">
+                <h3><i class="fas fa-broadcast-tower"></i> Wydarzenia na żywo</h3>
+                <button onclick="toggleFeed()" class="toggle-feed">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div class="feed-content" id="feedContent">
+                <div class="welcome-message">
+                    <div class="commentator-message both">
+                        <div class="commentator-avatar">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <div class="message-content">
+                            <p>Witamy na meczu! System zarządzania meczem jest gotowy do działania.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Statystyk -->
+    <div class="stats-panel">
+        <div class="stats-header">
+            <h3><i class="fas fa-chart-bar"></i> Statystyki Meczu</h3>
+        </div>
+        <div class="stats-content">
+            <div class="stat-item">
+                <span class="stat-label">Łączne punkty:</span>
+                <span class="stat-value"><span id="totalHomeScore">0</span> - <span id="totalAwayScore">0</span></span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Wydarzenia:</span>
+                <span class="stat-value" id="eventCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Faule:</span>
+                <span class="stat-value">
+                    Gospodarze: <span id="homeFouls">0</span> | 
+                    Goście: <span id="awayFouls">0</span>
+                </span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Timeout:</span>
+                <span class="stat-value">
+                    Gospodarze: <span id="homeTimeouts">0</span> | 
+                    Goście: <span id="awayTimeouts">0</span>
+                </span>
+            </div>
+        </div>
+        
+        <div class="export-section">
+            <button onclick="exportMatchData()" class="export-btn">
+                <i class="fas fa-download"></i> Eksportuj dane meczu
+            </button>
+            <button onclick="saveMatch()" class="save-btn">
+                <i class="fas fa-save"></i> Zapisz mecz
+            </button>
+        </div>
+    </div>
+
+    <script src="mecz-manager.js"></script>
+</body>
+</html>

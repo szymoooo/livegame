@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>System Zarządzania Meczem Koszykówki</title>
+
+    <!-- Podpięcie Twojego CSS (zachowuje pełen styl systemu) -->
+    <link rel="stylesheet" href="style-mecz.css">
+
+    <!-- Oryginalne style inline z Twojego index.html - zachowane -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+
+        .welcome-container {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border-radius: 25px;
+            padding: 60px;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+            max-width: 1000px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .welcome-container h1 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .basketball-icon {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .description {
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            text-decoration: none;
+            padding: 20px 35px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(72, 187, 120, 0.3);
+            border: 2px solid transparent;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn.secondary:hover {
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin: 50px 0;
+        }
+
+        .feature {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .feature h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .feature p {
+            color: #4a5568;
+            margin: 0;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+
+        .version-info {
+            background: #edf2f7;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 40px;
+            border: 2px dashed #cbd5e0;
+        }
+
+        .version-info h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .version-info p {
+            color: #718096;
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .welcome-container h1 {
+                font-size: 2.2rem;
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+
+        /* Dodatkowe style dla konfiguratora wpasowane w wygląd */
+        .configurator {
+            margin-top: 40px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+            border-radius: 20px;
+            padding: 24px;
+            color: #2d3748;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        }
+
+        .configurator h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #2d3748;
+            font-size: 1.4rem;
+        }
+
+        .config-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .config-row input[type="text"],
+        .config-row input[type="number"] {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 0.95rem;
+            flex: 1 1 220px;
+        }
+
+        .config-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .config-btn {
+            padding: 10px 14px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .config-btn.add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .config-btn.save {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            flex: 1 1 auto;
+        }
+
+        .players-list, .teams-list {
+            margin-top: 12px;
+            padding-left: 18px;
+            color: #2d3748;
+        }
+
+        .players-list li, .teams-list li {
+            margin-bottom: 6px;
+            list-style: none;
+            padding: 8px 10px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .players-list li small {
+            color: #718096;
+        }
+
+        .teams-list li {
+            display: block;
+        }
+
+        .debug-log {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+            color: #2d3748;
+            font-size: 0.9rem;
+            max-height: 120px;
+            overflow-y: auto;
+            border: 1px dashed #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="basketball-icon">🏀</div>
+
+        <h1>System Zarządzania Meczem</h1>
+
+        <p class="description">
+            Profesjonalny system do obsługi meczów koszykówki na żywo
+            <br>z panelem administracyjnym i live feedem wydarzeń
+        </p>
+
+        <div class="buttons">
+            <a href="zarzadzanie-meczu.html" class="btn">
+                <i>🚀</i> Uruchom System
+            </a>
+            <a href="demo-test.html" class="btn secondary">
+                <i>📋</i> Przegląd Funkcji
+            </a>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature">
+                <h3>⏱️ Timer Meczu</h3>
+                <p>Automatyczny licznik z okresami i pauzami</p>
+            </div>
+
+            <div class="feature">
+                <h3>📊 Live Wyniki</h3>
+                <p>Wyniki w czasie rzeczywistym</p>
+            </div>
+
+            <div class="feature">
+                <h3>🎯 Wydarzenia</h3>
+                <p>Gole, faule, timeout'y z detalami</p>
+            </div>
+
+            <div class="feature">
+                <h3>💾 Auto-Save</h3>
+                <p>Automatyczne zapisywanie danych</p>
+            </div>
+
+            <div class="feature">
+                <h3>📱 Responsywny</h3>
+                <p>Działa na wszystkich urządzeniach</p>
+            </div>
+
+            <div class="feature">
+                <h3>📈 Statystyki</h3>
+                <p>Kompletne statystyki meczu</p>
+            </div>
+        </div>
+
+        <!-- KONFIGURATOR DRUŻYN - wkomponowany w Twoje UI -->
+        <div class="configurator" id="teamConfigurator">
+            <h2>⚙️ Konfigurator Drużyn (zapis do Firebase)</h2>
+
+            <form id="teamForm">
+                <div class="config-row">
+                    <input id="teamName" type="text" placeholder="Nazwa drużyny (np. Rostock Seawolves)" required>
+                </div>
+
+                <div class="config-row">
+                    <input id="playerName" type="text" placeholder="Imię i nazwisko zawodnika">
+                    <input id="playerNumber" type="number" placeholder="Numer zawodnika">
+                    <button type="button" class="config-btn add" id="addPlayerBtn">➕ Dodaj zawodnika</button>
+                </div>
+
+                <ul id="players" class="players-list"></ul>
+
+                <div class="config-actions">
+                    <button type="submit" class="config-btn save">💾 Zapisz drużynę do Firestore</button>
+                    <button type="button" class="config-btn" id="clearTemp">✖️ Wyczyść listę</button>
+                </div>
+
+                <div class="debug-log" id="debugLog" aria-live="polite">
+                    <strong>Log:</strong>
+                    <div id="logLines"></div>
+                </div>
+            </form>
+
+            <h3 style="margin-top:16px;">📋 Zapisane drużyny (live):</h3>
+            <ul id="teamsList" class="teams-list"></ul>
+        </div>
+
+        <div class="version-info">
+            <h4>🗂️ Pliki w Systemie:</h4>
+            <p><strong>📄 zarzadzanie-meczu.html</strong> - Główny interfejs systemu</p>
+            <p><strong>🎨 style-mecz.css</strong> - Stylowanie interfejsu</p>
+            <p><strong>⚙️ mecz-manager.js</strong> - Logika zarządzania meczem</p>
+            <p><strong>📖 README-MECZ.md</strong> - Instrukcja obsługi</p>
+            <p><strong>🧪 demo-test.html</strong> - Prezentacja funkcji</p>
+        </div>
+
+        <p style="margin-top: 30px; color: #a0aec0; font-size: 0.9rem;">
+            System gotowy do użycia • Wszystkie dane zapisywane automatycznie
+        </p>
+    </div>
+
+    <!-- Oryginalny skrypt animacji ładowania (zachowany) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.welcome-container');
+            container.style.opacity = '0';
+            container.style.transform = 'scale(0.9)';
+
+            setTimeout(() => {
+                container.style.transition = 'all 0.8s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'scale(1)';
+            }, 100);
+        });
+    </script>
+
+    <!-- FIREBASE: konfiguracja i logika zapisu w Firestore -->
+    <script type="module">
+        // Import Firebase SDK modułowo (uruchamiane w przeglądarce)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            onSnapshot,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // -> Wklej tutaj swój firebaseConfig <- (z konsoli Firebase)
+        const firebaseConfig = {
+          apiKey: "TWÓJ_API_KEY",
+          authDomain: "livematch-e0f0d.firebaseapp.com",
+          projectId: "livematch-e0f0d",
+          storageBucket: "livematch-e0f0d.appspot.com",
+          messagingSenderId: "123456789",
+          appId: "1:123456789:web:abcdef"
+        };
+
+        // Inicjalizacja Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Elementy DOM
+        const teamForm = document.getElementById('teamForm');
+        const teamNameInput = document.getElementById('teamName');
+        const playerNameInput = document.getElementById('playerName');
+        const playerNumberInput = document.getElementById('playerNumber');
+        const addPlayerBtn = document.getElementById('addPlayerBtn');
+        const playersList = document.getElementById('players');
+        const teamsList = document.getElementById('teamsList');
+        const clearTempBtn = document.getElementById('clearTemp');
+        const debugLog = document.getElementById('logLines');
+
+        // Tymczasowa lista zawodników (dla jednego tworzonego teamu)
+        let tempPlayers = [];
+
+        // Funkcja logująca w UI oraz w konsoli
+        function log(msg) {
+            const line = document.createElement('div');
+            const time = new Date().toLocaleTimeString();
+            line.textContent = `[${time}] ${msg}`;
+            debugLog.prepend(line); // dodaj na górze
+            console.log(msg);
+        }
+
+        // Dodawanie zawodnika lokalnie (przed zapisem drużyny)
+        addPlayerBtn.addEventListener('click', () => {
+            const name = playerNameInput.value.trim();
+            const number = playerNumberInput.value.trim();
+
+            if (!name || !number) {
+                alert('Podaj imię i numer zawodnika!');
+                return;
+            }
+
+            // Walidacja: unikalny numer w tej tworzonej drużynie
+            if (tempPlayers.some(p => p.number === number)) {
+                alert(`Numer ${number} jest już przypisany w tej drużynie. Wybierz inny numer.`);
+                return;
+            }
+
+            const player = {
+                id: Date.now().toString(),
+                name,
+                number,
+                stats: { points1:0, rebounds:0, assists:0, steals:0, fouls:0 }
+            };
+
+            tempPlayers.push(player);
+
+            // Dodaj do listy wizualnej
+            const li = document.createElement('li');
+            li.dataset.id = player.id;
+            li.innerHTML = `<span>#${player.number} - ${player.name}</span> <small></small>`;
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Usuń';
+            removeBtn.style.marginLeft = '10px';
+            removeBtn.onclick = () => {
+                tempPlayers = tempPlayers.filter(tp => tp.id !== player.id);
+                li.remove();
+                log(`Usunięto tymczasowego zawodnika ${player.name} (#${player.number})`);
+            };
+            li.appendChild(removeBtn);
+            playersList.appendChild(li);
+
+            log(`Dodano tymczasowego zawodnika ${player.name} (#${player.number})`);
+
+            // Wyczyść pola
+            playerNameInput.value = '';
+            playerNumberInput.value = '';
+            playerNameInput.focus();
+        });
+
+        // Czyść tymczasową listę
+        clearTempBtn.addEventListener('click', () => {
+            tempPlayers = [];
+            playersList.innerHTML = '';
+            log('Wyczyszczono tymczasową listę zawodników');
+        });
+
+        // Funkcja zapisująca drużynę do Firestore
+        async function saveTeamToFirestore(name, players) {
+            if (!name || players.length === 0) {
+                alert('Drużyna musi mieć nazwę i przynajmniej jednego zawodnika.');
+                return;
+            }
+
+            try {
+                log(`Próbuję zapisać drużynę "${name}" z ${players.length} zawodnikami...`);
+                const docRef = await addDoc(collection(db, "teams"), {
+                    name,
+                    players,
+                    createdAt: serverTimestamp()
+                });
+                log(`✅ Drużyna zapisana w Firestore (id: ${docRef.id})`);
+                // Po zapisie wyczyść lokalne tempPlayers i formularz
+                tempPlayers = [];
+                playersList.innerHTML = '';
+                teamForm.reset();
+            } catch (err) {
+                console.error('Błąd zapisu do Firestore:', err);
+                log(`❌ Błąd: ${err.code || err.message}`);
+                // Jeśli permission-denied to pokaż konkretne wskazówki
+                if (err?.code === 'permission-denied') {
+                    alert('Brak uprawnień do zapisu w Firestore. Sprawdź reguły bezpieczeństwa w konsoli Firebase.');
+                } else {
+                    alert('Wystąpił błąd podczas zapisu drużyny (sprawdź konsolę).');
+                }
+            }
+        }
+
+        // Obsługa formularza (zapis drużyny)
+        teamForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const teamName = teamNameInput.value.trim();
+            if (!teamName) {
+                alert('Podaj nazwę drużyny!');
+                return;
+            }
+            if (tempPlayers.length === 0) {
+                alert('Dodaj przynajmniej jednego zawodnika!');
+                return;
+            }
+            saveTeamToFirestore(teamName, tempPlayers);
+        });
+
+        // Live lista drużyn z Firestore (onSnapshot)
+        function subscribeTeamsLive() {
+            try {
+                const colRef = collection(db, "teams");
+                onSnapshot(colRef, (snapshot) => {
+                    teamsList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>${data.name}</strong> <br><small>${data.players?.length || 0} zawodników</small>`;
+                        // opcjonalnie pokaż szczegóły pod drużyną
+                        const details = document.createElement('div');
+                        details.style.marginTop = '8px';
+                        details.style.fontSize = '0.9rem';
+                        details.style.color = '#4a5568';
+
+                        if (Array.isArray(data.players) && data.players.length) {
+                            const pls = document.createElement('ul');
+                            pls.style.paddingLeft = '14px';
+                            pls.style.margin = 0;
+                            data.players.forEach(p => {
+                                const pli = document.createElement('li');
+                                pli.style.listStyle = 'none';
+                                pli.style.padding = '6px 0';
+                                pli.textContent = `#${p.number} — ${p.name}`;
+                                pls.appendChild(pli);
+                            });
+                            details.appendChild(pls);
+                        } else {
+                            details.textContent = 'Brak zawodników';
+                        }
+
+                        li.appendChild(details);
+                        teamsList.appendChild(li);
+                    });
+                    log(`Otrzymano aktualizację zespołów (count: ${snapshot.size})`);
+                }, (error) => {
+                    console.error('onSnapshot error:', error);
+                    log(`❌ Błąd onSnapshot: ${error.code || error.message}`);
+                    if (error?.code === 'permission-denied') {
+                        alert('Brak uprawnień do odczytu Firestore. Ustaw reguły na czas developmentu: allow read, write: if true;');
+                    }
+                });
+            } catch (err) {
+                console.error('subscribeTeamsLive error', err);
+                log(`subscribeTeamsLive error: ${err.message || err}`);
+            }
+        }
+
+        // Start subskrypcji live po załadowaniu strony
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Inicjalizacja Firestore i subskrypcji listy drużyn...');
+            subscribeTeamsLive();
+        });
+    </script>
+</body>
+</html>
